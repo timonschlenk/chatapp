@@ -30,5 +30,5 @@ server.listen(PORT, () => {
 //main part of the server I think right now loks when someone connects (the id) in Terminal
 io.on('connection', (socket) => {
     console.log(`a user connected with id: ${socket.id}` );
-
+    
 });
