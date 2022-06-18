@@ -25,6 +25,17 @@ body {
     margin: 0.25rem;
 }
 
+#username:focus {
+    outline: none;
+}
+
+#username {
+    border: none;
+    padding: 0 1rem;
+    border-radius: 2rem;
+    margin: 0.25rem;
+}
+
 #input:focus {
     outline: none;
 }

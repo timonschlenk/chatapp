@@ -10,6 +10,9 @@ const io = new Server(server);
 const pages = [ { url: "/write", file: "/public/write/index.html"}, 
                 { url: "/read", file: "/public/read/index.html"} ]
 
+var messages = new Array();
+var users = new Map();
+
 //necsessairy to load script and css files without type mismatch even if in right path
 const path = require('path');
 app.use('/public', express.static(path.join(__dirname, "public")));
@@ -21,14 +24,29 @@ pages.forEach( page => {
     });
 });
 
-
 //creates server on localhost:PORT
 server.listen(PORT, () => {
     console.log(`listening on port: ${PORT}`);
 });
 
-//main part of the server I think right now loks when someone connects (the id) in Terminal
+//important stuff happens here
+//get executed when client creates instance of io()
 io.on('connection', (socket) => {
-    console.log(`a user connected with id: ${socket.id}` );
-    
+    console.log(`a user connected with id: ${socket.id}`);
+    io.to(socket.id).emit('previous messages', messages);
+    users.set(socket.id, 'Anonymous');
+
+    socket.on('message', (message) => {
+        io.emit('message', message);
+        messages.push(message);
+        users.set(socket.id, message.username);
+    });
+
+    // 'disconnect' is build in event
+    socket.on('disconnect', () => {
+        console.log(`*${users.get(socket.id)} disconnected*`);
+        console.log(users);
+        io.emit('disconnect message', `*${users.get(socket.id)} disconnected*`)
+        users.delete(socket.id);
+    });
 });
