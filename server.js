@@ -44,9 +44,11 @@ io.on('connection', (socket) => {
 
     // 'disconnect' is build in event
     socket.on('disconnect', () => {
-        console.log(`*${users.get(socket.id)} disconnected*`);
-        console.log(users);
-        io.emit('disconnect message', `*${users.get(socket.id)} disconnected*`)
+        let message = {username: false, message:`*${users.get(socket.id)} disconnected*`};
+        io.emit('disconnect message', message);
+        messages.push(message);
         users.delete(socket.id);
+
+        console.log(message.message);
     });
 });
