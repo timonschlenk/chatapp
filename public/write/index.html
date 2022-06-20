@@ -5,12 +5,16 @@
     <link rel="stylesheet" href="/public/styles.css" type="text/css">
   </head>
   <body>
-    <ul id="messages"></ul>
-    <form id="form" action="">
-      <input id="username" autocomplete="off" placeholder="Username"/>
-      <input id="input" autocomplete="off" placeholder="Message"/>
-      <button>Send</button>
-    </form>
+    <div id="contacts">
+    </div>
+    <div id="main">
+      <ul id="messages"></ul>
+      <form id="form" action="">
+        <input id="username" autocomplete="off" placeholder="Username"/>
+        <input id="input" autocomplete="off" placeholder="Message"/>
+        <button>Send</button>
+      </form>
+    </div>
     <script src="/socket.io/socket.io.js"></script>  <!-- loaded by server.js -->
     <script src="/public/js/client.js" type="text/javascript"></script> <!-- manipulation of data received from server -->
     <script src="public/write/forms.js"></script>  <!-- sending message to server when form submitted -->

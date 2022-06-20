@@ -13,7 +13,7 @@ const pages = [ { url: "/write", file: "/public/write/index.html"},
 var messages = new Array();
 var users = new Map();
 
-//necsessairy to load script and css files without type mismatch even if in right path
+//necessairy to load script and css files without type mismatch even if in right path
 const path = require('path');
 app.use('/public', express.static(path.join(__dirname, "public")));
 
