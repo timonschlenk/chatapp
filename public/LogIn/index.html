@@ -5,7 +5,14 @@
     <title>Log in</title>
   </head>
   <body>
-    <div id="mainSquare"></div>
+    <div id="mainSquare">
+      <h2 id="title">Log in</h2>
+      <div id="container">
+        <input class="inputs" type="text" placeholder="Username" />
+        <input class="inputs" type="password" placeholder="Password" />
+        <input class="inputs" type="submit" value="Log In" id="subBtn" />
+      </div>
+    </div>
 
     <script src="/socket.io/socket.io.js"></script>
     <script src="/public/LogIn/loginScript.js"></script>
