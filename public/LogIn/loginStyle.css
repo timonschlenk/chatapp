@@ -25,13 +25,14 @@ body {
   align-items: center;
   flex-direction: column;
   justify-content: space-evenly;
-  height: 200px;
+  height: 250px;
 }
 
 .inputs {
   border: none;
   height: 30px;
   border-radius: 6px;
+  text-align: center;
   box-shadow: inset -1px 3px 8px 5px #d6d6d6, 2px 5px 16px 0px #a2a7af,
     4px 12px 43px 3px rgba(0, 0, 0, 0.5);
   /* make lighter shadow */
@@ -41,4 +42,9 @@ body {
   height: 25px;
   font-weight: 600;
   font-family: "Courier New", Courier, monospace;
+  cursor: pointer;
+}
+
+#sign {
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
 }
