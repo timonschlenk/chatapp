@@ -11,6 +11,7 @@ const pages = [{ url: "/", file: "/public/LogIn/index.html" }];
 
 var messages = new Array();
 var users = new Map();
+var accounts = new Map();
 
 //necessairy to load script and css files without type mismatch even if in right path
 const path = require("path");
@@ -52,5 +53,17 @@ io.on("connection", (socket) => {
     users.delete(socket.id);
 
     console.log(message.message);
+  });
+
+  socket.on("controlPassword", (data) => {
+    if(accounts.get(data.user) == data.password){
+        io.to(socket.id).emit("passwordCorrect", true);
+    } else {
+        io.to(socket.id).emit("passwordCorrect", false);
+    }
+  });
+
+  socket.on("createUser", (data) => {
+    accounts.set(data.user, data.password);
   });
 });
