@@ -3,14 +3,24 @@
   <head>
     <link rel="stylesheet" href="/public/LogIn/loginStyle.css" />
     <title>Sign In</title>
+    <style>
+      #container {
+        height: 300px;
+      }
+    </style>
   </head>
   <body>
     <div id="mainSquare">
       <h2 id="title">Sign up</h2>
       <div id="container">
+        <input class="inputs" type="text" placeholder="Email" />
         <input class="inputs" type="text" placeholder="Username" />
         <input class="inputs" type="password" placeholder="Password" />
+        <input class="inputs" type="password" placeholder="Confirm Password" />
         <input class="inputs" type="submit" value="Sign up" id="subBtn" />
+        <p id="sign">
+          Go back to <a href="/public/LogIn/index.html">Log in</a> page
+        </p>
       </div>
     </div>
 

@@ -7,16 +7,13 @@ body {
   margin: 10vh auto;
   align-items: center;
   flex-direction: column;
-  height: 80vh;
-  width: 60vw;
+  height: 450px;
+  width: 350px;
   background: rgb(224, 248, 250);
   border: 6px rgb(194, 193, 193) solid;
   border-radius: 10px;
   -webkit-box-shadow: 7px 6px 14px 1px rgba(0, 0, 0, 0.55);
   box-shadow: 7px 6px 14px 1px rgba(0, 0, 0, 0.55);
-}
-#title {
-  /* margin: 10px; */
 }
 
 #container {
