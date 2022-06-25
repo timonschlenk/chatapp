@@ -42,6 +42,13 @@ body {
   cursor: pointer;
 }
 
+#subBtn:hover {
+  transform: scale(1.05);
+}
+#subBtn:active {
+  transform: scale(0.95);
+}
+
 #sign {
   font-family: Verdana, Geneva, Tahoma, sans-serif;
 }
