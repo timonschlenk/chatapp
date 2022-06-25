@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="stylesheet" href="/public/LogIn/loginStyle.css" />
+    <title>Sign Up</title>
+  </head>
+  <body>
+    <div id="mainSquare">
+      <h2 id="title">Sign Up</h2>
+      <div id="container">
+        <form id="form">
+          <input class="inputs" type="text" placeholder="Email" id="email" name="email"/>
+          <input class="inputs" type="text" placeholder="Username" id="username" name="username"/>
+          <input class="inputs" type="password" placeholder="Password" id="password" name="password"/>
+          <input class="inputs" type="password" placeholder="Confirm Password" id="confirm" name="confirm"/>
+          <input class="inputs" type="submit" value="Sign Up" id="subBtn" name = "subBtn"/>
+        </form>
+        <p id="error"></p>
+        <p id="sign">
+          Go back to <a href="/login">Log in</a> page
+        </p>
+      </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/public/SignUp/signUp.js"></script>
+  </body>
+</html>

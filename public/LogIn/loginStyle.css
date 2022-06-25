@@ -7,7 +7,7 @@ body {
   margin: 10vh auto;
   align-items: center;
   flex-direction: column;
-  height: 450px;
+  height: 500px;
   width: 350px;
   background: rgb(224, 248, 250);
   border: 6px rgb(194, 193, 193) solid;
@@ -22,7 +22,16 @@ body {
   align-items: center;
   flex-direction: column;
   justify-content: space-evenly;
-  height: 250px;
+  height: 400px;
+}
+
+#container > form#form {
+  display: flex;
+  margin: 20px;
+  align-items: center;
+  flex-direction: column;
+  justify-content: space-evenly;
+  height: 300px;
 }
 
 .inputs {
@@ -44,4 +53,10 @@ body {
 
 #sign {
   font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
+#error {
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  color: red;
+  font-size: smaller;
 }
