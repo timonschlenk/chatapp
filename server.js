@@ -1,17 +1,35 @@
 const PORT = 3000; // Sets the output port
 
+const mysql = require('mysql');
 const express = require("express");
+const session = require('express-session');
 const app = express();
 const http = require("http");
 const server = http.createServer(app);
 const { Server } = require("socket.io");
 const io = new Server(server);
 
-const pages = [{ url: "/", file: "/public/LogIn/index.html" }];
+// linking link to according html file
+const pages = [{ url: "/login", file: "/public/LogIn/index.html" },
+               { url: "/signup", file: "/public/SignUp/index.html" },
+               { url: "/signup-success", file: "/public/SignUp/userCreated.html" }];
+
+
+const connection = mysql.createConnection({
+	host     : 'localhost',
+	user     : 'root',
+	password : '',
+	database : 'login'
+});
 
 var messages = new Array();
 var users = new Map();
-var accounts = new Map();
+
+app.use(session({
+	secret: 'secret',
+	resave: true,
+	saveUninitialized: true
+}));
 
 //necessairy to load script and css files without type mismatch even if in right path
 const path = require("path");
@@ -64,6 +82,31 @@ io.on("connection", (socket) => {
   });
 
   socket.on("createUser", (data) => {
-    accounts.set(data.user, data.password);
+    //data includes data.username, data.password and data.email
+    let insertData = "INSERT INTO accounts (username, password, email) VALUES (?, ?, ?);";
+    let checkExistingUsername = `SELECT id FROM accounts WHERE username = "${data.username}";`
+    let checkExistingEmail = `SELECT id FROM accounts WHERE email = "${data.email}";`
+
+    connection.query(checkExistingUsername, function(error1, user){
+        if (error1) throw error;
+        if(user.length === 0){
+            connection.query(checkExistingEmail, function(error2, email){
+                if (error2) throw error;
+                if(email.length === 0){
+                    connection.query(insertData, [data.username, data.password, data.email], function(error3, results) {
+                        if (error3) throw error;
+                        console.log('user created');
+                        io.to(socket.id).emit('successful', true);
+                    });
+                }else{  
+                    console.log("email exists")
+                    io.to(socket.id).emit('error', 'Error: A User is already registered with this email');
+                }
+            });
+        }else{  
+            console.log("user exists")
+            io.to(socket.id).emit('error', 'Error: The Username is already taken');
+        }
+    });
   });
 });
