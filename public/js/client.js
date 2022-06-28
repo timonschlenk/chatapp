@@ -1,6 +1,8 @@
 var socket = io(); //joins the server
 var user;
 
+const username = document.getElementById("username");
+
 socket.emit("getUser", (true));
 socket.on("userInformation", (user) => {
     console.log(user);
@@ -8,6 +10,7 @@ socket.on("userInformation", (user) => {
         window.location.href = '/login';
     } else {
         socket.emit("userConnection", user);
+        username.innerHTML = user.username;
     }
 });
 

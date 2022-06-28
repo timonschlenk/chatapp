@@ -52,7 +52,6 @@ server.listen(PORT, () => {
 //important stuff happens here
 //get executed when client creates instance of io()
 io.on("connection", (socket) => {
-  console.log(`a user connected with id: ${socket.id}`);
   IPsConnected.push(socket.handshake.address)
   io.to(socket.id).emit("previous messages", messages);
 
@@ -111,8 +110,7 @@ io.on("connection", (socket) => {
           io.to(socket.id).emit('error', 'Error: Username or Password is incorrect');
         } else if (password[0].password === data.password){
           io.to(socket.id).emit('successful', true);
-          users.set(socket.request.connection.remoteAddress, data.username);
-          console.log(users);
+          users.set(socket.handshake.address, data.username);
         } else {
           console.log("login false");
           io.to(socket.id).emit('error', 'Error: Username or Password is incorrect');
@@ -135,12 +133,12 @@ io.on("connection", (socket) => {
   });
 
   socket.on("userConnection", (user) => {
-    let message = {
-      username: false,
-      message: `*${user.username} connected*`,
-    };
-    io.emit("conncetion message", message);
-    messages.push(message);
+    // let message = {
+    //   username: false,
+    //   message: `*${user.username} connected*`,
+    // };
+    // io.emit("conncetion message", message);
+    // messages.push(message);
   });
 
   // 'disconnect' is build in event
@@ -155,11 +153,11 @@ io.on("connection", (socket) => {
       }
     }, 10000);
 
-    let message = {
-      username: false,
-      message: `*${users.get(ip)} disconnected*`,
-    };
-    io.emit("conncetion message", message);
-    messages.push(message);
+    // let message = {
+    //   username: false,
+    //   message: `*${users.get(ip)} disconnected*`,
+    // };
+    // io.emit("conncetion message", message);
+    // messages.push(message);
   });
 });

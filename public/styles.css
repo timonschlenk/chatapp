@@ -31,9 +31,8 @@ body {
 
 #username {
     border: none;
-    padding: 0 1rem;
     border-radius: 2rem;
-    margin: 0.25rem;
+    margin: auto 1rem;
 }
 
 #input:focus {
