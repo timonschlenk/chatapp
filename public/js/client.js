@@ -1,4 +1,15 @@
 var socket = io(); //joins the server
+var user;
+
+socket.emit("getUser", (true));
+socket.on("userInformation", (user) => {
+    console.log(user);
+    if (!user.exists){
+        window.location.href = '/login';
+    } else {
+        socket.emit("userConnection", user);
+    }
+});
 
 //executed when receiving message: 'message' with the content (message)
 socket.on('message', (message) => {
@@ -13,7 +24,7 @@ socket.on('previous messages', (messages) => {
 });
 
 //executed when receiving message: 'disconnect message' with the content (message)
-socket.on('disconnect message', (message) => {
+socket.on('conncetion message', (message) => {
     addMessage(message); //add disconnect disconnect message consisting of Username = false and DisconnectMessage to ul
 });
 

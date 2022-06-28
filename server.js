@@ -12,11 +12,11 @@ const io = new Server(server);
 // linking link to according html file
 const pages = [{ url: "/login", file: "/public/LogIn/index.html" },
                { url: "/signup", file: "/public/SignUp/index.html" },
-               { url: "/signup-success", file: "/public/SignUp/userCreated.html" }
-               { url: "/home", file:"/public/LogIn/"}];
+               { url: "/signup-success", file: "/public/SignUp/userCreated.html"},
+               { url: "/home", file: "/public/write/index.html" }];
 
 
-const connection = mysql.createConnection({
+const databaseConnection = mysql.createConnection({
 	host     : 'localhost',
 	user     : 'root',
 	password : '',
@@ -25,6 +25,7 @@ const connection = mysql.createConnection({
 
 var messages = new Array();
 var users = new Map();
+var IPsConnected = new Array();
 
 app.use(session({
 	secret: 'secret',
@@ -52,26 +53,12 @@ server.listen(PORT, () => {
 //get executed when client creates instance of io()
 io.on("connection", (socket) => {
   console.log(`a user connected with id: ${socket.id}`);
+  IPsConnected.push(socket.handshake.address)
   io.to(socket.id).emit("previous messages", messages);
-  users.set(socket.id, "Anonymous");
 
   socket.on("message", (message) => {
     io.emit("message", message);
     messages.push(message);
-    users.set(socket.id, message.username);
-  });
-
-  // 'disconnect' is build in event
-  socket.on("disconnect", () => {
-    let message = {
-      username: false,
-      message: `*${users.get(socket.id)} disconnected*`,
-    };
-    io.emit("disconnect message", message);
-    messages.push(message);
-    users.delete(socket.id);
-
-    console.log(message.message);
   });
 
   socket.on("controlPassword", (data) => {
@@ -88,7 +75,7 @@ io.on("connection", (socket) => {
     let checkExistingUsername = `SELECT id FROM accounts WHERE username = "${data.username}";`
     let checkExistingEmail = `SELECT id FROM accounts WHERE email = "${data.email}";`
 
-    connection.query(checkExistingUsername, function(error1, user){
+    databaseConnection.query(checkExistingUsername, function(error1, user){
         if (error1) throw error1;
         if(user.length === 0){
             connection.query(checkExistingEmail, function(error2, email){
@@ -114,16 +101,65 @@ io.on("connection", (socket) => {
   socket.on("checkUser", (data) => {
     //data includes data.username, data.password and data.email
     
-    let getPassword = `SELECT password FROM accounts WHERE username = "${data.username}" OR email = "${data.email}";`;
+    let getPassword = `SELECT password FROM accounts WHERE username = "${data.username}"`;
 
-    connection.query(getPassword, function(error, password){
+    databaseConnection.query(getPassword, function(error, password){
         if (error) throw error;
-        if(password === `${data.password}`){
-            io.to(socket.id).emit('successful', true);
+        pwdLength = password.length;
+        if (pwdLength === 0){
+          console.log("login false");
+          io.to(socket.id).emit('error', 'Error: Username or Password is incorrect');
+        } else if (password[0].password === data.password){
+          io.to(socket.id).emit('successful', true);
+          users.set(socket.request.connection.remoteAddress, data.username);
+          console.log(users);
         } else {
-            console.log("login false");
-            io.to(socket.id).emit('error', 'Error: Username or Password is wrong');
-        }
+          console.log("login false");
+          io.to(socket.id).emit('error', 'Error: Username or Password is incorrect');
+        };
     });
+  });
+
+  socket.on("getUser", (loadHome) => {
+    if(loadHome){
+      let ip = socket.handshake.address;
+      console.log(users);
+      console.log(ip);
+      console.log(users.has(ip));
+      if(users.has(socket.handshake.address)){
+        io.to(socket.id).emit("userInformation", {exists: true, username: users.get(socket.handshake.address)});
+      } else {
+        io.to(socket.id).emit("userInformation", {exists: false, username: false});
+      }
+    }
+  });
+
+  socket.on("userConnection", (user) => {
+    let message = {
+      username: false,
+      message: `*${user.username} connected*`,
+    };
+    io.emit("conncetion message", message);
+    messages.push(message);
+  });
+
+  // 'disconnect' is build in event
+  socket.on("disconnect", () => {
+    let ip = socket.handshake.address;
+    IPsConnected.splice(IPsConnected.indexOf(ip), 1);
+
+    setTimeout(() => {
+      console.log(IPsConnected.indexOf(ip) != -1);
+      if(IPsConnected.indexOf(ip) == -1){
+        users.delete(ip);
+      }
+    }, 10000);
+
+    let message = {
+      username: false,
+      message: `*${users.get(ip)} disconnected*`,
+    };
+    io.emit("conncetion message", message);
+    messages.push(message);
   });
 });
