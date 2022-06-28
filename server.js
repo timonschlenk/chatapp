@@ -12,7 +12,8 @@ const io = new Server(server);
 // linking link to according html file
 const pages = [{ url: "/login", file: "/public/LogIn/index.html" },
                { url: "/signup", file: "/public/SignUp/index.html" },
-               { url: "/signup-success", file: "/public/SignUp/userCreated.html" }];
+               { url: "/signup-success", file: "/public/SignUp/userCreated.html" }
+               { url: "/home", file:"/public/LogIn/"}];
 
 
 const connection = mysql.createConnection({
@@ -88,13 +89,13 @@ io.on("connection", (socket) => {
     let checkExistingEmail = `SELECT id FROM accounts WHERE email = "${data.email}";`
 
     connection.query(checkExistingUsername, function(error1, user){
-        if (error1) throw error;
+        if (error1) throw error1;
         if(user.length === 0){
             connection.query(checkExistingEmail, function(error2, email){
-                if (error2) throw error;
+                if (error2) throw error2;
                 if(email.length === 0){
                     connection.query(insertData, [data.username, data.password, data.email], function(error3, results) {
-                        if (error3) throw error;
+                        if (error3) throw error3;
                         console.log('user created');
                         io.to(socket.id).emit('successful', true);
                     });
@@ -106,6 +107,22 @@ io.on("connection", (socket) => {
         }else{  
             console.log("user exists")
             io.to(socket.id).emit('error', 'Error: The Username is already taken');
+        }
+    });
+  });
+
+  socket.on("checkUser", (data) => {
+    //data includes data.username, data.password and data.email
+    
+    let getPassword = `SELECT password FROM accounts WHERE username = "${data.username}" OR email = "${data.email}";`;
+
+    connection.query(getPassword, function(error, password){
+        if (error) throw error;
+        if(password === `${data.password}`){
+            io.to(socket.id).emit('successful', true);
+        } else {
+            console.log("login false");
+            io.to(socket.id).emit('error', 'Error: Username or Password is wrong');
         }
     });
   });
