@@ -9,13 +9,14 @@ const server = http.createServer(app);
 const { Server } = require("socket.io");
 const io = new Server(server);
 
-// linking link to according html file
-const pages = [{ url: "/login", file: "/public/LogIn/index.html" },
-               { url: "/signup", file: "/public/SignUp/index.html" },
-               { url: "/signup-success", file: "/public/SignUp/userCreated.html"},
-               { url: "/home", file: "/public/write/index.html" }];
+//all written messages are stored in here
+var messages = new Array();
+//all logged in users are stored in here with their ip address as 
+var users = new Map();
+//all connected ip adresses
+var IPsConnected = new Array();
 
-
+//create conncection to database
 const databaseConnection = mysql.createConnection({
 	host     : 'localhost',
 	user     : 'root',
@@ -23,15 +24,18 @@ const databaseConnection = mysql.createConnection({
 	database : 'login'
 });
 
-var messages = new Array();
-var users = new Map();
-var IPsConnected = new Array();
-
+//something database releated
 app.use(session({
 	secret: 'secret',
 	resave: true,
 	saveUninitialized: true
 }));
+
+// linking link to according html file
+const pages = [{ url: "/login", file: "/public/LogIn/index.html" },
+               { url: "/signup", file: "/public/SignUp/index.html" },
+               { url: "/signup-success", file: "/public/SignUp/userCreated.html"},
+               { url: "/home", file: "/public/write/index.html" }];
 
 //necessairy to load script and css files without type mismatch even if in right path
 const path = require("path");
@@ -77,10 +81,10 @@ io.on("connection", (socket) => {
     databaseConnection.query(checkExistingUsername, function(error1, user){
         if (error1) throw error1;
         if(user.length === 0){
-            connection.query(checkExistingEmail, function(error2, email){
+          databaseConnection.query(checkExistingEmail, function(error2, email){
                 if (error2) throw error2;
                 if(email.length === 0){
-                    connection.query(insertData, [data.username, data.password, data.email], function(error3, results) {
+                  databaseConnection.query(insertData, [data.username, data.password, data.email], function(error3, results) {
                         if (error3) throw error3;
                         console.log('user created');
                         io.to(socket.id).emit('successful', true);
@@ -133,12 +137,7 @@ io.on("connection", (socket) => {
   });
 
   socket.on("userConnection", (user) => {
-    // let message = {
-    //   username: false,
-    //   message: `*${user.username} connected*`,
-    // };
-    // io.emit("conncetion message", message);
-    // messages.push(message);
+    
   });
 
   // 'disconnect' is build in event
@@ -152,12 +151,5 @@ io.on("connection", (socket) => {
         users.delete(ip);
       }
     }, 10000);
-
-    // let message = {
-    //   username: false,
-    //   message: `*${users.get(ip)} disconnected*`,
-    // };
-    // io.emit("conncetion message", message);
-    // messages.push(message);
   });
 });
