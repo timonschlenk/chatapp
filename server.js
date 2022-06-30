@@ -8,6 +8,7 @@ const http = require("http");
 const server = http.createServer(app);
 const { Server } = require("socket.io");
 const io = new Server(server);
+const path = require("path");
 
 //all written messages are stored in here
 var messages = new Array();
@@ -31,15 +32,14 @@ app.use(session({
 	saveUninitialized: true
 }));
 
+//necessairy to load script and css files without type mismatch even if in right path
+app.use("/public", express.static(path.join(__dirname, "public")));
+
 // linking link to according html file
 const pages = [{ url: "/login", file: "/public/LogIn/index.html" },
                { url: "/signup", file: "/public/SignUp/index.html" },
                { url: "/signup-success", file: "/public/SignUp/userCreated.html"},
                { url: "/home", file: "/public/write/index.html" }];
-
-//necessairy to load script and css files without type mismatch even if in right path
-const path = require("path");
-app.use("/public", express.static(path.join(__dirname, "public")));
 
 //links the right html for each url
 pages.forEach((page) => {
