@@ -56,20 +56,12 @@ server.listen(PORT, () => {
 //important stuff happens here
 //get executed when client creates instance of io()
 io.on("connection", (socket) => {
-  IPsConnected.push(socket.handshake.address)
+  IPsConnected.push(socket.handshake.address);
   io.to(socket.id).emit("previous messages", messages);
 
   socket.on("message", (message) => {
     io.emit("message", message);
     messages.push(message);
-  });
-
-  socket.on("controlPassword", (data) => {
-    if(accounts.get(data.user) == data.password){
-        io.to(socket.id).emit("passwordCorrect", true);
-    } else {
-        io.to(socket.id).emit("passwordCorrect", false);
-    }
   });
 
   socket.on("createUser", (data) => {
@@ -86,16 +78,13 @@ io.on("connection", (socket) => {
                 if(email.length === 0){
                   databaseConnection.query(insertData, [data.username, data.password, data.email], function(error3, results) {
                         if (error3) throw error3;
-                        console.log('user created');
                         io.to(socket.id).emit('successful', true);
                     });
                 }else{  
-                    console.log("email exists")
                     io.to(socket.id).emit('error', 'Error: A User is already registered with this email');
                 }
             });
         }else{  
-            console.log("user exists")
             io.to(socket.id).emit('error', 'Error: The Username is already taken');
         }
     });
@@ -103,20 +92,16 @@ io.on("connection", (socket) => {
 
   socket.on("checkUser", (data) => {
     //data includes data.username, data.password and data.email
-    
     let getPassword = `SELECT password FROM accounts WHERE username = "${data.username}"`;
-
     databaseConnection.query(getPassword, function(error, password){
         if (error) throw error;
         pwdLength = password.length;
         if (pwdLength === 0){
-          console.log("login false");
           io.to(socket.id).emit('error', 'Error: Username or Password is incorrect');
         } else if (password[0].password === data.password){
           io.to(socket.id).emit('successful', true);
           users.set(socket.handshake.address, data.username);
         } else {
-          console.log("login false");
           io.to(socket.id).emit('error', 'Error: Username or Password is incorrect');
         };
     });
@@ -125,19 +110,12 @@ io.on("connection", (socket) => {
   socket.on("getUser", (loadHome) => {
     if(loadHome){
       let ip = socket.handshake.address;
-      console.log(users);
-      console.log(ip);
-      console.log(users.has(ip));
-      if(users.has(socket.handshake.address)){
-        io.to(socket.id).emit("userInformation", {exists: true, username: users.get(socket.handshake.address)});
+      if(users.has(ip)){
+        io.to(socket.id).emit("userInformation", {exists: true, username: users.get(ip)});
       } else {
         io.to(socket.id).emit("userInformation", {exists: false, username: false});
       }
     }
-  });
-
-  socket.on("userConnection", (user) => {
-    
   });
 
   // 'disconnect' is build in event
