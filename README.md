@@ -113,7 +113,7 @@ socket.on("message name", (messageData) => {
 ```
 This code would send the message received from one client to everybody and send the one client a conformation, that the message was received.
 
-So now let's look at some of the existing **socket.on** functions.
+So now let's look at some of the implemented **socket.on** functions and their Syntax.
 
 The first one is simple: When we receive the message "message" from our client we send the data **message** to everybody and add it to our **messages** array. So when one client writes something, every client get's the message (including the one who wrote it) and **messages** is the array that every client receives upon connection, so that he can see all the messages written so far.
 ```javascript
@@ -124,7 +124,7 @@ socket.on("message", (message) => {
 ```
 
 The next one's are a bit harder, because they include communication with the database.
-Let's break down that monster, that follows:
+Let's just shortly explain that monster, that follows:
 ```javascript
 socket.on("createUser", (data) => {
   //data includes data.username, data.password and data.email
@@ -152,6 +152,42 @@ socket.on("createUser", (data) => {
   });
 });
 ```
-We have to create a user and add it to our database. For that we receive a username, a password and an email as data from the client. Now in the next three variables, we have some SQL code, the language used to manipulate databases. And they do exactly what they are called. Insert Data inserts 3 values in our accounts table: username, password and email (id is automatically generated). Check Existing Username returns us the ID of the username (in case it doesn't exist it returns undefined). And the same thing for email.
+We have to create a user and add it to our database. so first we check, if they username or email already exists. For that we receive a username, a password and an email as data from the client. Now in the next three variables, we have some SQL code, the language used to manipulate databases. And they do exactly what they are called. Insert Data inserts 3 values in our accounts table, check Existing Username returns us the ID of the username and email the ID of the email.
 
-databaseConnection.query(SQL, callbackFunction)
+The Syntax is fot this is:
+```javascript
+databaseConnection.query(SQLString, function(errorMessage, returnValues){
+  if (errorMessage) throw errorMessage; //to print out the error Message
+  //execute Code and use returnValues
+}
+```
+
+With that knowledge, we can understand, how the server.js file works. There is only one thing left, which is a function executed when the user disconnects with the Syntax:
+```javascript
+socket.on("disconnect", () => {
+  //code when disconnecting like cleaning up to save storage
+});
+```
+
+#### The disconnect/reconnect issue
+
+Whenever you switch page, for example from /login to /home, the client disconnects and reconnects from the server, therefore has a new socket.id. To know wether it's still the same user, we use the users IP adress. But an IP adress can change, so we can't purly rely on IP adresses to identify users. What we do is save the IP address in an array, when a user connects. If he disconnects we wait ten secounds until we remove the IP, so when logging in and therefore switching page we use the IP adress to track wether you are logged in or not and the moment you reconnect, you stay logged in on /home.
+
+### The client side
+
+To use socket.io use the following Syntax at the beginning of the file:
+```javascript
+socket = io();
+```
+
+To send messages to the server use:
+```javascript
+socket.emit("message name", data);
+```
+
+To receive messages use:
+```javascript
+socket.on("message name", (data) => {
+  //code exeuted when message received
+});
+```
